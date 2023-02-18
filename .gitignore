@@ -361,3 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/QMorph_Refined/lib/OpenMesh/OpenMeshToolsd.lib
+/QMorph_Refined/lib/OpenMesh/OpenMeshTools.lib
+/QMorph_Refined/lib/OpenMesh/OpenMeshCored.lib
+/QMorph_Refined/lib/OpenMesh/OpenMeshCore.lib
+/QMorph_Refined/lib/ConnectorStaticLibd.pdb
+/QMorph_Refined/lib/ConnectorStaticLibd.lib
+/QMorph_Refined/lib/ConnectorStaticLibd.idb
+/QMorph_Refined/lib/ConnectorStaticLib.pdb
+/QMorph_Refined/lib/ConnectorStaticLib.lib
