@@ -14,4 +14,81 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\QMorph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\QMorphDeprecated.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Smoother.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ToolMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ToolMeshDebugUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ToolMeshGetterSetter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ToolMeshMathUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ToolMeshTriangular.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\QMorph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Smoother.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ToolMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\ConnectorStaticLib.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+    <Library Include="lib\ConnectorStaticLibd.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+    <Library Include="lib\OpenMesh\OpenMeshCore.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+    <Library Include="lib\OpenMesh\OpenMeshCored.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+    <Library Include="lib\OpenMesh\OpenMeshTools.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+    <Library Include="lib\OpenMesh\OpenMeshToolsd.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\ConnectorStaticLib.pdb">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\ConnectorStaticLibd.idb">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\ConnectorStaticLibd.pdb">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
