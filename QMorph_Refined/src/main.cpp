@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "QMorph.h"
+#include "CrossField.h"
 
 // ..\data\ccc.m: deleteVertexMergeFace at point(id==870)
 
@@ -28,8 +29,12 @@ int main(int argc, char* argv[]) {
 		std::cout << "Unsupported file format" << std::endl;
 		return -1;
 	}
+	CrossField cf;
 	QMorph qmorph(&mesh);
-	qmorph.doQMorphProcess();
+	//cout << qmorph.toGmshString();
+	//qmorph.doQMorphProcess();
+	cf.setMesh(&mesh);
+	cf.main();
 	string newSuffix = "_qmorph.obj";
 	mesh.write_obj((name + newSuffix).c_str());
 	return 0;

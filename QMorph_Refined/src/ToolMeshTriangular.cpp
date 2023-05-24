@@ -120,6 +120,9 @@ VertexHandle CToolMesh::mergeEdge(VertexHandle va, VertexHandle vb) {
 	//     v2
 	HalfedgeHandle he1 = sourceTargetHalfedge(va, vb);
 	HalfedgeHandle he2 = halfedgeSym(he1);
+	while (halfedgeSource(halfedgePrev(halfedgeSym(halfedgeNext(he1)))) == halfedgeTarget(halfedgeNext(halfedgeSym(halfedgePrev(he1))))) {
+		deleteVertexMergeFace(halfedgeTarget(halfedgeNext(he1)));
+	}
 	VertexHandle v1 = halfedgeTarget(halfedgeNext(he1));
 	VertexHandle v2 = halfedgeTarget(halfedgeNext(he2));
 	list<VertexHandle> vbConnectedVertices;

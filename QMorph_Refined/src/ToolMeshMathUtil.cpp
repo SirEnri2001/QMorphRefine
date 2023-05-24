@@ -3,29 +3,27 @@
 // calculate the bisector of angle between he1 & he1_next. result based on local coordination.
 // he1 and he1_next must be connected and continous. 
 Point CToolMesh::bisector(HalfedgeHandle he1, HalfedgeHandle he1_next) {
-	VertexHandle joint;
+	CPoint joint;
 	//assert(he1 == nextBoundaryHalfedge(he1_next) || he1_next == nextBoundaryHalfedge(he1));
 	topology_assert(halfedgeTarget(he1) == halfedgeSource(he1_next), { he1, he1_next });
 	//--he1-->--he1_next-->
-	joint = halfedgeTarget(he1);
+	joint = getPoint(halfedgeTarget(he1));
 	//<--v1--.--v2-->
-	Point cp1 = getPoint(halfedgeSource(he1)) - getPoint(joint);
-	Point cp2 = getPoint(halfedgeTarget(he1_next)) - getPoint(joint);
+	Point cp1 = getPoint(halfedgeSource(he1)) - joint;
+	Point cp2 = getPoint(halfedgeTarget(he1_next)) - joint;
 	cp1 = cp1 / cp1.norm();
 	cp2 = cp2 / cp2.norm();
 	Point cp3 = cp1 + cp2;
 	CPoint c;
-	Point localNormal = (getPoint(joint) - getPoint(halfedgeSource(he1)))
-		.cross(getPoint(halfedgeSource(halfedgePrev(he1))) - getPoint(halfedgeSource(he1)));
-
-	if (localNormal.dot(cp2.cross(cp1)) < 0.0) {
-		cp3 *= -1.0;
-	}
-	if ((cp2.cross(cp1)).norm() < EPSILON && cp2.dot(cp1) < 0.0) {
-		Point bisector = (getPoint(halfedgeSource(he1)) - getPoint(halfedgeTarget(he1)))
-			.cross(normalVertex(halfedgeTarget(he1)));
+	Point localNormal = normalVertex(halfedgeSource(he1));
+	localNormal = localNormal/localNormal.norm();
+	if ((cp2.cross(cp1)).norm() < 1e-4 && cp2.dot(cp1) < 0.0) {
+		Point bisector = cp1.cross(localNormal);
 		bisector = bisector / bisector.norm();
 		return bisector;
+	}
+	if (cp2.cross(cp1).dot(localNormal) < 0) {
+		cp3 = -cp3;
 	}
 	return cp3 / cp3.norm();
 }

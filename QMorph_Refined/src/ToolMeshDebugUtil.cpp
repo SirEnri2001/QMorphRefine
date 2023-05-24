@@ -8,6 +8,12 @@ void CToolMesh::highlight(VertexHandle vert) {
 #endif
 }
 
+void CToolMesh::highlight(CPoint p) {
+#ifdef _DEBUG
+	debug.HighlightVertex(new double[3] { p[0], p[1], p[2]});
+#endif
+}
+
 void CToolMesh::highlight(EdgeHandle edge) {
 #ifdef _DEBUG
 	Point p1, p2;

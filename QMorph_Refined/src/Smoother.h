@@ -1,6 +1,7 @@
 #pragma once
 #include "ToolMesh.h"
 
+
 class Smoother
 {
 public:
@@ -12,7 +13,6 @@ public:
 	void quadriInteriorSmooth(VertexHandle);
 	void doTriangleSmooth(int epoch = 3);
 	int doBoundarySmooth(HalfedgeHandle bhe, int epoch = 1);
-
-	CTMesh* mesh;
+  	CTMesh* mesh;
 };
 

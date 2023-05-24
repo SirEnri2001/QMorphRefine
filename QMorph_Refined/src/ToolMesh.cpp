@@ -66,6 +66,10 @@ void CToolMesh::splitFace(VertexHandle v1, VertexHandle v2) {
 int CToolMesh::deleteVertexMergeFace(VertexHandle tar)
 {
 	assert(m_map_vert.find(tar->getId()) != m_map_vert.end());
+	if (!vertexHalfedge(tar)) {
+		deleteVertex(tar);
+		return 0;
+	}
 	std::list<EdgeHandle> edges;
 	VertexEdgeIter ve_iter(this, tar);
 	while (!ve_iter.end()) {
@@ -327,12 +331,14 @@ void CToolMesh::clearFace(vector<HalfedgeHandle> heVector) {
 		}
 		while (!q.empty()) {
 			//HalfedgeHandle he = vertexHalfedge(q.front());
-			assert(q.front() == halfedgeTarget(vertexHalfedge(q.front())));
-			for (VertexVertexIter vv_it(this, q.front()); !vv_it.end(); ++vv_it) {
-				if (find(vVector.begin(), vVector.end(), *vv_it) == vVector.end()) {
-					if (!(*vv_it)->markDelete) {
-						q.push(*vv_it);
-						(*vv_it)->markDelete = true;
+			//assert(q.front() == halfedgeTarget(vertexHalfedge(q.front())));
+			if (vertexHalfedge(q.front())) {
+				for (VertexVertexIter vv_it(this, q.front()); !vv_it.end(); ++vv_it) {
+					if (find(vVector.begin(), vVector.end(), *vv_it) == vVector.end()) {
+						if (!(*vv_it)->markDelete) {
+							q.push(*vv_it);
+							(*vv_it)->markDelete = true;
+						}
 					}
 				}
 			}

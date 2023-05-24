@@ -105,7 +105,7 @@ SideDefineResult QMorph::verticalSideSeek(HalfedgeHandle lfe, HalfedgeHandle rfe
 	VertexHandle pivotVertex = mesh->halfedgeTarget(lfe);
 	Point pivot = mesh->getPoint(pivotVertex);
 	Point bisector = mesh->bisector(lfe, rfe);
-	VertexInFrontHeIterator pivotIter(mesh, pivotVertex);
+	VertexInFrontHeIterator pivotIter(mesh, pivotVertex,lfe,rfe);
 	double minAngle = 360.0;
 	bool traversed = false;
 	for (; !pivotIter.end(); pivotIter++) {
@@ -151,7 +151,7 @@ SideDefineResult QMorph::horizontalSideSeek(HalfedgeHandle lfe, HalfedgeHandle r
 	VertexHandle pivotVertex = mesh->halfedgeTarget(lfe);
 	Point pivot = mesh->getPoint(pivotVertex);
 	Point bisector = mesh->bisector(lfe, rfe);
-	VertexInFrontHeIterator pivotIter(mesh, pivotVertex);
+	VertexInFrontHeIterator pivotIter(mesh, pivotVertex,lfe,rfe);
 	bool traversed = false;
 	double minAngle = 360.0;
 	// traverse all quadrilateral surround the vertex
@@ -210,10 +210,16 @@ SideDefineResult QMorph::horizontalSideSplitSeek(HalfedgeHandle lfe, HalfedgeHan
 	VertexHandle pivotVertex = mesh->halfedgeTarget(lfe);
 	Point pivot = mesh->getPoint(pivotVertex);
 	Point bisector = mesh->bisector(lfe, rfe);
-	VertexInFrontHeIterator pivotIter(mesh, pivotVertex);
+	Point leftLocal = mesh->getPoint(mesh->halfedgeSource(lfe)) - pivot;
+	Point rightLocal = mesh->getPoint(mesh->halfedgeTarget(rfe)) - pivot;
+	Point cs = leftLocal.cross(bisector);
+	cout << cs[0] << cs[1] << cs[2];
+	VertexInFrontHeIterator pivotIter(mesh, pivotVertex,lfe,rfe);
 	double minAngle = 360.0;
 	
 	HalfedgeHandle he2 = minAngleHe;
+
+
 	for (pivotIter.reset(); !pivotIter.end(); pivotIter++) {
 		if ((bisector.cross(mesh->getPoint(mesh->halfedgeSource(*pivotIter)) - pivot))
 			.dot(bisector.cross(mesh->getPoint(mesh->halfedgeTarget(mesh->halfedgeNext(*pivotIter))) - pivot)) < 0) {
@@ -249,7 +255,7 @@ SideDefineResult QMorph::verticalSideSplitSeek(HalfedgeHandle lfe, HalfedgeHandl
 	VertexHandle pivotVertex = mesh->halfedgeTarget(lfe);
 	Point pivot = mesh->getPoint(pivotVertex);
 	Point bisector = mesh->bisector(lfe, rfe);
-	VertexInFrontHeIterator pivotIter(mesh, pivotVertex);
+	VertexInFrontHeIterator pivotIter(mesh, pivotVertex,lfe,rfe);
 	double minAngle = 360.0;
 
 	for (; !pivotIter.end(); pivotIter++) {
@@ -310,7 +316,6 @@ int QMorph::frontEdgeSideDefine(HalfedgeHandle lfe, HalfedgeHandle rfe) {
 	default:
 		break;
 	}
-	
 	if (horizontalSideSplitSeek(lfe, rfe, resultUpSide) == SideDefineResult::Succeeded) {
 		HalfedgeHandle he2 = resultUpSide;
 		HalfedgeHandle he1 = mesh->halfedgeNext(he2);
@@ -360,13 +365,8 @@ int QMorph::doSideDefine() {
 		if (!mesh->getNeedTopEdge(lfe) && !mesh->getNeedTopEdge(rfe)) {
 			continue;
 		}
-		
 		int retVal = frontEdgeSideDefine(lfe, rfe);
 		if (retVal != 0) {
-			if (globalIter == 9) {
-				mesh->highlight({ lfe,rfe });
-				mesh->updateDebug();
-			}
 			return -1;
 		}
 
@@ -538,6 +538,10 @@ int QMorph::doCornerGenerate() {
 					rfeNext = mesh->getNextFe(rfe),
 					nnRfe = mesh->getNextFe(rfeNext);
 				if (mesh->isQuad(mesh->halfedgeFace(mesh->getPrevFe(lfe))) || mesh->isQuad(mesh->halfedgeFace(mesh->getNextFe(rfe)))) {
+					if (globalIter == 115) {
+						mesh->highlight({ lfe,rfe });
+						mesh->updateDebug();
+					}
 					generateCorner(lfe, rfe);
 					return 1;
 				}
@@ -678,7 +682,10 @@ int QMorph::doSeam()
 			continue;
 		}
 		if (mesh->angle(feIter, mesh->getNextFe(feIter)) < seamEpsilon) {
-
+			if (i == 64&&globalIter==27) {
+				mesh->highlight({ feIter,mesh->getNextFe(feIter) });
+				mesh->updateDebug();
+			}
 			// v1p--prevFe--v1---v2n---nextNextFe--v2nn
 			//              | nextFe
 			//           feIter /
@@ -708,8 +715,13 @@ int QMorph::doSeam()
 			//prevFe->attributeCopyTo(prevFeAttribute);
 			//nextNextFe->attributeCopyTo(nextNextFeAttribute);
 			mesh->edgeRecovery(v1, v2n);
+			
 			// TODO: might delete edge with special attributes
 			mesh->clearFace({ feIter,nextFe, mesh->vertexHalfedge(v2n, v1)});
+			if (i == 64 && globalIter == 27) {
+				mesh->highlight({ feIter,mesh->getNextFe(feIter) });
+				mesh->updateDebug();
+			}
 			v1 = mesh->mergeEdge(v1, v2n);
 			// v1p--prevFe-> v1 --nextNextFe-> v2nn
 			//               |
@@ -723,7 +735,7 @@ int QMorph::doSeam()
 			//delete feIterAttribute;
 			//delete nextFeAttribute;
 			//delete nextNextFeAttribute;
-
+			
 			mesh->setNextFe(prevFe, nextNextFe);
 			mesh->setNextFe(mesh->getPrevFe(prevFe), prevFe);
 			mesh->setNextFe(nextNextFe, mesh->getNextFe(nextNextFe));
@@ -748,10 +760,6 @@ int QMorph::countFeToFe(HalfedgeHandle fe1, HalfedgeHandle fe2) {
 
 // This function maintains 
 int QMorph::seperateFrontLoop(HalfedgeHandle cutPos) {
-	if (globalIter == 9) {
-		mesh->highlight({ cutPos });
-		mesh->updateDebug();
-	}
 	mesh->topology_assert(mesh->isFront(mesh->halfedgeTarget(cutPos)) && mesh->isFront(mesh->halfedgeSource(cutPos)), { cutPos });
 	mesh->topology_assert(!mesh->isFront(cutPos) && !mesh->isFront(mesh->halfedgeSym(cutPos)), { cutPos });
 	VertexHandle vertex1 = mesh->halfedgeTarget(cutPos);
@@ -848,9 +856,6 @@ int QMorph::doQMorphProcess() {
 	this->initFrontEdgeGroup();
 	while (doSmooth(), globalIter++, getFrontEdgeGroup())
 	{
-		if (globalIter == 9) {
-			highlightAllFes();
-		}
 		if (frontEdgeGroupSize(getFrontEdgeGroup()) == 4) {
 			HalfedgeHandle he = getFrontEdgeGroup();
 			mesh->setSide(he, mesh->getNextFe(he), NULL);
@@ -865,6 +870,9 @@ int QMorph::doQMorphProcess() {
 			popFrontEdgeGroup();
 			continue;
 		}
+		if (globalIter == 27) {
+			highlightAllFes();
+		}
 		if (doSeam() != 0)
 		{
 			continue;
@@ -873,13 +881,7 @@ int QMorph::doQMorphProcess() {
 		if (doCornerGenerate()) {
 			continue;
 		}
-		if (globalIter == 9) {
-			highlightAllFes();
-		}
 		if (doSideDefine() == -1) { //fail to sideDefine because frontEdges are splited
-			if (globalIter == 9) {
-				highlightAllFes();
-			}
 			continue;
 		}
 		

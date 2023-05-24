@@ -19,28 +19,13 @@ typedef enum SideDefineResult {
 class VertexInFrontHeIterator
 {
 public:
-	VertexInFrontHeIterator(CTMesh* pMesh, VertexHandle v)
+	VertexInFrontHeIterator(CTMesh* pMesh, VertexHandle v,HalfedgeHandle fe1,HalfedgeHandle fe2)
 	{
 		m_pMesh = pMesh;
 		m_vertex = v;
 		m_halfedge = pMesh->halfedge_handle(v);
-		leftFhe = NULL;
-		rightFhe = NULL;
-		for (CTMesh::VertexIHalfedgeIter heh(pMesh, v); !heh.end(); ++heh)
-		{
-			if (pMesh->isFront(*heh)) {
-				leftFhe = *heh;
-				break;
-			}
-		}
-
-		for (CTMesh::VertexOHalfedgeIter heh(pMesh, v); !heh.end(); ++heh)
-		{
-			if (pMesh->isFront(*heh)) {
-				rightFhe = *heh;
-				break;
-			}
-		}
+		leftFhe = fe1;
+		rightFhe = fe2;
 		assert(leftFhe);
 		assert(rightFhe);
 		m_halfedge = leftFhe;
@@ -140,6 +125,8 @@ private:
 		frontEdgeGroups.pop_front();
 		return he;
 	}
+
+public:
 	HalfedgeHandle getFrontEdgeGroup() {
 		if (frontEdgeGroups.size() > 0) {
 			return frontEdgeGroups.front();
@@ -153,6 +140,7 @@ private:
 		popFrontEdgeGroup();
 		return getFrontEdgeGroup() != NULL;
 	}
+private:
 
 	void updateHeadFrontEdgeGroup(HalfedgeHandle he) {
 		popFrontEdgeGroup();
@@ -176,6 +164,40 @@ private:
 	void updateFeClassification(HalfedgeHandle feList = HalfedgeHandle());
 	int doSeam();
 	int seperateFrontLoop(HalfedgeHandle cutPos);
+public:
+	string toGmshString() {
+		initFrontEdgeGroup();
+		std::stringstream _os;
+		for (CTMesh::VertexIter iter(mesh); !iter.end(); iter++) {
+			if (mesh->isBoundary(*iter)) {
+				_os << "p" << (*iter)->getId() << " = gmsh.model.geo.addPoint("
+					<< mesh->getPoint(*iter)[0] << ", " << mesh->getPoint(*iter)[1] << ", " << mesh->getPoint(*iter)[2] << ")\n";
+			}
+		}
+		int curve = 1;
+		for (HalfedgeHandle he : frontEdgeGroups) {
+			he = mesh->halfedgeSym(he);
+			int i = 1;
+			HalfedgeHandle heIter = he;
+			do {
+				_os << "l" << i << " = gmsh.model.geo.addLine(p" << mesh->halfedgeSource(heIter)->getId() << ", p"
+					<< mesh->halfedgeTarget(heIter)->getId() << ")" << endl;
+				i++;
+			} while (heIter = mesh->halfedgePrev(heIter), heIter != he);
+			_os << "c" << curve << " = gmsh.model.geo.addCurveLoop([";
+			for (int j = 1; j < i; j++) {
+				_os << "l" << j << ", ";
+			}
+			_os << "])" << endl;
+			curve++;
+		}
+		_os << "pl = gmsh.model.geo.addPlaneSurface([";
+		for (int j = 1; j < curve; j++) {
+			_os <<"c" << j << ", ";
+		}
+		_os<< "])";
+		return _os.str();
+	}
 #if COMPILE_DEPRECATED
 	int frontEdgeSideDefine(int i, HalfedgeHandle lfe, HalfedgeHandle rfe); //Deprecated
 	bool needSeam(HalfedgeHandle ek, HalfedgeHandle el); //Deprecated

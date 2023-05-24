@@ -78,6 +78,8 @@ public:
 	CToolHalfedge* rightSide = NULL;
 	CToolHalfedge* topEdge = NULL;
 	CToolHalfedge* feReference = NULL;
+
+	int crossFieldMatching = -1; //ccw from current face to sym face
 	
 	~CToolHalfedge()
 	{
@@ -102,7 +104,8 @@ public:
 };
 
 class CToolFace : public CFace {
-	
+public:
+	std::vector<CPoint> crossFieldDirection;
 };
 
 
@@ -127,7 +130,8 @@ public:
 	
 	typedef MeshVertexIterator<CToolVertex, CToolEdge, CToolFace, CToolHalfedge> VertexIter;
 	typedef MeshHalfEdgeIterator<CToolVertex, CToolEdge, CToolFace, CToolHalfedge> HalfedgeIter;
-	
+	typedef MeshFaceIterator<CToolVertex, CToolEdge, CToolFace, CToolHalfedge> FaceIter;
+	typedef MeshEdgeIterator<CToolVertex, CToolEdge, CToolFace, CToolHalfedge> EdgeIter;
 
 	Point normalVertex(VertexHandle vertex);
 	Point bisector(HalfedgeHandle he1, HalfedgeHandle he1_next);
@@ -166,6 +170,7 @@ public:
 	//void highlight(initializer_list<HalfedgeHandle> heList);
 	//void highlight(initializer_list<VertexHandle> vertList);
 	void highlight(initializer_list<Component*> componentList);
+	void highlight(CPoint point);
 	void topology_assert(bool expr, initializer_list<Component*> componentList = initializer_list<Component*>());
 	void updateDebug();
 	
@@ -242,6 +247,13 @@ public:
 	void disconnect(EdgeHandle edge1);
 	bool isDisconnected(EdgeHandle edge);
 	void unsetHalfedge(VertexHandle v, HalfedgeHandle he);
+	std::vector<FaceHandle> objIdVertexMap;
+	void write_obj_set_map(string filename) {
+		for (FaceIter fIter(this); !fIter.end(); fIter++) {
+			objIdVertexMap.push_back(*fIter);
+		}
+		this->write_obj(filename.c_str());
+	}
 protected:
 	int nextVid = 0;
 	int nextFid = 0;
