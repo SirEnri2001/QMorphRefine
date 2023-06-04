@@ -268,9 +268,11 @@ public:
 	}
 
 	CPoint edgeCrossField(EdgeHandle edge, int id);
-
 	CPoint vertexCrossField(VertexHandle vertex, int id);
-	CPoint nearestCrossField(VertexHandle vertex, CPoint direction);
+	CPoint nearestCrossField(VertexHandle vertex, CPoint direction, int& index);
+
+	void alignToCrossField(EdgeHandle edge, VertexHandle pivotVertex);
+	int getMatchingIndex(CPoint cp1, CPoint cp2);
 protected:
 	int nextVid = 0;
 	int nextFid = 0;

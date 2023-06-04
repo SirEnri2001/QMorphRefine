@@ -2,8 +2,6 @@
 #include <vector>
 #include "QMorph.h"
 
-// ..\data\ccc.m: deleteVertexMergeFace at point(id==870)
-
 int main(int argc, char* argv[]) {
 	CTMesh mesh;
 	// get filename
@@ -28,13 +26,9 @@ int main(int argc, char* argv[]) {
 		std::cout << "Unsupported file format" << std::endl;
 		return -1;
 	}
-	//QMorph qmorph(&mesh);
+	QMorph qmorph(&mesh);
 	//cout << qmorph.toGmshString();
-	//qmorph.doQMorphProcess();
-	mesh.calculateCrossField();
-	mesh.highlightVertexCrossField();
-	mesh.highlightSingularCrossField();
-	mesh.updateDebug();
+	qmorph.doQMorphProcess();
 	string newSuffix = "_qmorph.obj";
 	mesh.write_obj((name + newSuffix).c_str());
 	return 0;

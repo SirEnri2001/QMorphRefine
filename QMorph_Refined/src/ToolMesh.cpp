@@ -135,6 +135,7 @@ bool CToolMesh::isDisconnected(EdgeHandle edge) {
 
 int CToolMesh::deleteEdgeMergeFace(EdgeHandle tar)
 {
+
 	// <--he1-(va)<-he4---
 	//         ^|
 	//      hea||heb
@@ -218,6 +219,7 @@ int CToolMesh::deleteEdgeMergeFace(EdgeHandle tar)
 		//     |  |    |  |
 		//      \  ----  /
 		//        ------
+		std::vector<CPoint> cf = halfedgeFace(hea)->crossFieldDirection;
 		deleteFace(halfedgeFace(hea));
 		setFace(edgeHalfedge(tar, 0), NULL);
 		setFace(edgeHalfedge(tar, 1), NULL);
@@ -232,20 +234,25 @@ int CToolMesh::deleteEdgeMergeFace(EdgeHandle tar)
 		do {
 			tmp_face_vhandles.push_back(halfedgeTarget(heIter));
 		} while(heIter = halfedgeNext(heIter), heIter != he3);
-		createFace(tmp_face_vhandles);
+		createFace(tmp_face_vhandles)->crossFieldDirection = cf;
 		heIter = he1;
 		tmp_face_vhandles.clear();
 		do {
 			tmp_face_vhandles.push_back(halfedgeTarget(heIter));
 		} while (heIter = halfedgeNext(heIter), heIter != he4);
-		createFace(tmp_face_vhandles);
+		createFace(tmp_face_vhandles)->crossFieldDirection = cf;
 		return 0;
 	}
+	int cfCount = 0;
+	CPoint cf(0, 0, 0);
 	if (halfedgeFace(edgeHalfedge(tar, 0))) {
+		cf = halfedgeFace(edgeHalfedge(tar, 0))->crossFieldDirection[0];
 		deleteFace(halfedgeFace(edgeHalfedge(tar, 0)));
+		cfCount++;
 	}
 	if (halfedgeFace(edgeHalfedge(tar, 1))) {
 		deleteFace(halfedgeFace(edgeHalfedge(tar, 1)));
+		cfCount++;
 	}
 	topology_assert(!isSideEdge(edgeHalfedge(tar, 0)), { tar, edgeHalfedge(tar, 0)->feReference });
 	topology_assert(!isSideEdge(edgeHalfedge(tar, 1)), { tar, edgeHalfedge(tar, 1)->feReference });
@@ -267,6 +274,9 @@ int CToolMesh::deleteEdgeMergeFace(EdgeHandle tar)
 	} while (heIter = halfedgeNext(heIter), heIter != he4);
 	tmp_face_vhandles.push_back(va);
 	FaceHandle face = createFace(tmp_face_vhandles);
+	if (cfCount == 1) {
+		face->crossFieldDirection = 
+	}
 	return 0;
 }
 
@@ -455,3 +465,48 @@ CPoint CToolMesh::vertexCrossField(VertexHandle vertex, int id) {
 	return vertexCrossFieldVec;
 }
 
+CPoint CToolMesh::nearestCrossField(VertexHandle vertex, CPoint localDirection, int& index) {
+	CPoint nearest(0, 0, 0);
+	double minAngle = 360;
+	for (int i = 0; i < 4; i++) {
+		CPoint cf = vertexCrossField(vertex, i);
+		double angle = this->angle(cf+getPoint(vertex), vertex, localDirection+getPoint(vertex));
+		if (angle < minAngle) {
+			nearest = cf;
+			index = i;
+		}
+	}
+	return nearest;
+}
+
+int CToolMesh::getMatchingIndex(CPoint cp1, CPoint cp2) {
+	cp1 /= cp1.norm();
+	cp2 /= cp2.norm();
+	if ((cp1 + cp2).norm() < FLT_EPSILON) {
+		return 2;
+	}
+	if ((cp1 - cp2).norm() < FLT_EPSILON) {
+		return 0;
+	}
+	double angle = acos_limited(cp1.dot(cp2));
+	if (angle < 45) {
+		return 0;
+	}
+	if (angle < 135) {
+		return 1;
+	}
+	return 2;
+}
+
+void CToolMesh::alignToCrossField(EdgeHandle edge, VertexHandle pivotVertex) {
+	CPoint edgeVector = pivotVertex == edgeVertex1(edge) ? getPoint(edgeVertex2(edge)) - getPoint(edgeVertex1(edge)) : getPoint(edgeVertex1(edge)) - getPoint(edgeVertex2(edge));
+	int index;
+	CPoint cfDirection = nearestCrossField(pivotVertex, edgeVector, index);
+	CPoint newEdgeVector = cfDirection * edgeVector.dot(cfDirection);
+	if (pivotVertex == edgeVertex1(edge)) {
+		setPoint(edgeVertex2(edge), newEdgeVector + getPoint(pivotVertex));
+	}
+	else {
+		setPoint(edgeVertex1(edge), newEdgeVector + getPoint(pivotVertex));
+	}
+}

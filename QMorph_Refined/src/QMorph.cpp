@@ -11,6 +11,7 @@ QMorph::QMorph(CTMesh* tarMesh)
 	assert(tarMesh != NULL);
 	mesh = tarMesh;
 	smoother.setMesh(mesh);
+	mesh->calculateCrossField();
 }
 
 void QMorph::findPointForDebug(Point coord, Point target) {
@@ -105,6 +106,8 @@ SideDefineResult QMorph::verticalSideSeek(HalfedgeHandle lfe, HalfedgeHandle rfe
 	VertexHandle pivotVertex = mesh->halfedgeTarget(lfe);
 	Point pivot = mesh->getPoint(pivotVertex);
 	Point bisector = mesh->bisector(lfe, rfe);
+	int index;
+	bisector = mesh->nearestCrossField(pivotVertex, bisector, index);
 	VertexInFrontHeIterator pivotIter(mesh, pivotVertex,lfe,rfe);
 	double minAngle = 360.0;
 	bool traversed = false;
@@ -138,6 +141,7 @@ SideDefineResult QMorph::verticalSideSeek(HalfedgeHandle lfe, HalfedgeHandle rfe
 		return SideDefineResult::SideEdgeContact;
 	}
 	if (minAngle < constEpsilon) {
+		mesh->alignToCrossField(mesh->halfedgeEdge(minAngleHe), pivotVertex);
 		return SideDefineResult::Succeeded;
 	}
 	else {
@@ -870,9 +874,7 @@ int QMorph::doQMorphProcess() {
 			popFrontEdgeGroup();
 			continue;
 		}
-		if (globalIter == 27) {
-			highlightAllFes();
-		}
+		
 		if (doSeam() != 0)
 		{
 			continue;
@@ -880,6 +882,9 @@ int QMorph::doQMorphProcess() {
 		updateFeClassification();
 		if (doCornerGenerate()) {
 			continue;
+		}
+		if (globalIter == 5) {
+			highlightAllFes();
 		}
 		if (doSideDefine() == -1) { //fail to sideDefine because frontEdges are splited
 			continue;
