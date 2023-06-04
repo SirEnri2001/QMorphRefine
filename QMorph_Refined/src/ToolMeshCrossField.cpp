@@ -92,6 +92,11 @@ int CrossField::main() {
 	directional::polyvector_field(ftb, constFaces, constVectors, smoothWeight, roSyWeight, Eigen::VectorXd::Constant(constFaces.size(), -1), N, pvFieldHard);
 	directional::polyvector_to_raw(pvFieldHard, rawFieldHard, true);
 	directional::principal_matching(rawFieldHard);
+	for (int vertexIndex = 0; vertexIndex < rawFieldHard.singLocalCycles.rows(); vertexIndex++) {
+		if (!ct_mesh->isBoundary(ct_mesh->objIdVertexMap[rawFieldHard.singLocalCycles(vertexIndex)])) {
+			ct_mesh->objIdVertexMap[rawFieldHard.singLocalCycles(vertexIndex)]->isSingular = true;
+		}
+	}
 
 	//write cross field attributes to CTMesh
 	for (int faceIndex = 0; faceIndex < mesh.F.rows(); faceIndex++) {
@@ -111,17 +116,17 @@ int CrossField::main() {
 			if (ajacentFaceIndex == -1) {
 				continue;
 			}
-			int matchingNumber = isFromFaceToAjacent ? rawFieldHard.matching(ajacentEdgeIndex) : N - rawFieldHard.matching(ajacentEdgeIndex);
-			FaceHandle curFace = ct_mesh->objIdVertexMap[faceIndex];
-			FaceHandle adjFace = ct_mesh->objIdVertexMap[ajacentFaceIndex];
+			int matchingNumber = isFromFaceToAjacent ? rawFieldHard.matching(ajacentEdgeIndex) : (N - rawFieldHard.matching(ajacentEdgeIndex))%4;
+			FaceHandle curFace = ct_mesh->objIdFaceMap[faceIndex];
+			FaceHandle adjFace = ct_mesh->objIdFaceMap[ajacentFaceIndex];
 			for (CTMesh::FaceHalfedgeIter fhIter(curFace); !fhIter.end(); fhIter++) {
-				if (ct_mesh->halfedgeFace(ct_mesh->halfedgeSym(*fhIter))) {
+				if (ct_mesh->halfedgeFace(ct_mesh->halfedgeSym(*fhIter))==adjFace) {
 					(*fhIter)->crossFieldMatching = matchingNumber;
 					break;
 				}
 			}
 		}
-		ct_mesh->objIdVertexMap[faceIndex]->crossFieldDirection = crossFieldVector;
+		ct_mesh->objIdFaceMap[faceIndex]->crossFieldDirection = crossFieldVector;
 	}
 
 

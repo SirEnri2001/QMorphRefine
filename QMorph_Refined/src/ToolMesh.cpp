@@ -410,3 +410,47 @@ void CToolMesh::unsetHalfedge(VertexHandle v, HalfedgeHandle he) {
 		return;
 	}
 }
+
+CPoint CToolMesh::edgeCrossField(EdgeHandle edge, int id) {
+	if (isBoundary(edge)) {
+		return edgeFace1(edge)->crossFieldDirection[id];
+	}
+	HalfedgeHandle he1 = edgeHalfedge(edge, 0);
+	CPoint crossFieldVec1 = halfedgeFace(he1)->crossFieldDirection[id];
+	CPoint crossFieldVec2 = halfedgeFace(halfedgeSym(he1))->crossFieldDirection[(id + he1->crossFieldMatching)%4];
+	CPoint edgeCrossFieldVec = crossFieldVec1 + crossFieldVec2;
+	edgeCrossFieldVec = edgeCrossFieldVec / edgeCrossFieldVec.norm();
+	return edgeCrossFieldVec;
+}
+
+CPoint CToolMesh::vertexCrossField(VertexHandle vertex, int id) {
+	if (vertex->isSingular) {
+		return CPoint(0,0,0);
+	}
+	int rotationIndex = id;
+	CPoint vertexCrossFieldVec(0, 0, 0);
+	if (isBoundary(vertex)) {
+		for (VertexIHalfedgeIter vhIter(this, vertex); !vhIter.end(); vhIter++) {
+			if (isBoundary(*vhIter)) {
+				int rotationIndex = 0;
+				HalfedgeHandle he = halfedgeSym(*vhIter);
+				do {
+					if (isBoundary(halfedgeEdge(halfedgePrev(he)))) {
+						break;
+					}
+					rotationIndex += halfedgePrev(he)->crossFieldMatching;
+				} while (he = halfedgeSym(halfedgePrev(he)), !isBoundary(he));
+				vertexCrossFieldVec += halfedgeFace(halfedgeSym(*vhIter))->crossFieldDirection[id];
+				vertexCrossFieldVec += halfedgeFace(halfedgeSym(halfedgeNext(*vhIter)))->crossFieldDirection[(id+rotationIndex)%4];
+				vertexCrossFieldVec /= vertexCrossFieldVec.norm();
+				return vertexCrossFieldVec;
+			}
+		}
+	}
+	for (VertexIHalfedgeIter vihIter(this, vertex); !vihIter.end(); vihIter++) {
+		vertexCrossFieldVec += halfedgeFace(*vihIter)->crossFieldDirection[rotationIndex % 4];
+		rotationIndex += halfedgeNext(*vihIter)->crossFieldMatching;
+	}
+	vertexCrossFieldVec /= vertexCrossFieldVec.norm();
+	return vertexCrossFieldVec;
+}

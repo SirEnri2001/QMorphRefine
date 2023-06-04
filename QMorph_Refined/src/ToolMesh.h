@@ -44,7 +44,7 @@ public:
 	bool isSide = false;
 	int sideNum = 0;
 	bool markDelete = false;
-	
+	bool isSingular = false;
 	~CToolVertex()
 	{
 	}
@@ -79,7 +79,7 @@ public:
 	CToolHalfedge* topEdge = NULL;
 	CToolHalfedge* feReference = NULL;
 
-	int crossFieldMatching = -1; //ccw from current face to sym face
+	int crossFieldMatching = 100; //ccw from current face to sym face
 	
 	~CToolHalfedge()
 	{
@@ -169,6 +169,9 @@ public:
 	void highlight(VertexHandle vert);
 	void highlight(CPoint p1, CPoint p2);
 	void highlightCrossField();
+	void highlightEdgeCrossField();
+	void highlightSingularCrossField();
+	void highlightVertexCrossField();
 	//void highlight(initializer_list<HalfedgeHandle> heList);
 	//void highlight(initializer_list<VertexHandle> vertList);
 	void highlight(initializer_list<Component*> componentList);
@@ -252,13 +255,22 @@ public:
 	void disconnect(EdgeHandle edge1);
 	bool isDisconnected(EdgeHandle edge);
 	void unsetHalfedge(VertexHandle v, HalfedgeHandle he);
-	std::vector<FaceHandle> objIdVertexMap;
+	std::vector<FaceHandle> objIdFaceMap;
+	std::vector<VertexHandle> objIdVertexMap;
 	void write_obj_set_map(string filename) {
 		for (FaceIter fIter(this); !fIter.end(); fIter++) {
-			objIdVertexMap.push_back(*fIter);
+			objIdFaceMap.push_back(*fIter);
+		}
+		for (VertexIter vIter(this); !vIter.end(); vIter++) {
+			objIdVertexMap.push_back(*vIter);
 		}
 		this->write_obj(filename.c_str());
 	}
+
+	CPoint edgeCrossField(EdgeHandle edge, int id);
+
+	CPoint vertexCrossField(VertexHandle vertex, int id);
+	CPoint nearestCrossField(VertexHandle vertex, CPoint direction);
 protected:
 	int nextVid = 0;
 	int nextFid = 0;

@@ -52,6 +52,42 @@ void CToolMesh::highlightCrossField() {
 #endif
 }
 
+void CToolMesh::highlightEdgeCrossField() {
+#ifdef _DEBUG
+	for (CTMesh::EdgeIter eiter(this); !eiter.end(); eiter++) {
+		CPoint center=(getPoint(edgeVertex1(*eiter))+ getPoint(edgeVertex2(*eiter)))/2;
+		double length = this->length(edgeHalfedge(*eiter, 0));
+		highlight(center, this->edgeCrossField(*eiter, 0) * length /3 + center);
+		highlight(center, this->edgeCrossField(*eiter, 1) * length / 3 + center);
+		highlight(center, this->edgeCrossField(*eiter, 2) * length / 3 + center);
+		highlight(center, this->edgeCrossField(*eiter, 3) * length / 3 + center);
+	}
+#endif
+}
+
+void CToolMesh::highlightVertexCrossField() {
+#ifdef _DEBUG
+	for (CTMesh::VertexIter viter(this); !viter.end(); viter++) {
+		double length = this->length(vertexHalfedge(*viter));
+		CPoint center = getPoint(*viter);
+		highlight(center, this->vertexCrossField(*viter, 0) * length / 3 + center);
+		highlight(center, this->vertexCrossField(*viter, 1) * length / 3 + center);
+		highlight(center, this->vertexCrossField(*viter, 2) * length / 3 + center);
+		highlight(center, this->vertexCrossField(*viter, 3) * length / 3 + center);
+	}
+#endif
+}
+
+void CToolMesh::highlightSingularCrossField() {
+#ifdef _DEBUG
+	for (VertexIter vIter(this); !vIter.end(); vIter++) {
+		if ((*vIter)->isSingular) {
+			highlight(*vIter);
+		}
+	}
+#endif
+}
+
 void CToolMesh::highlight(HalfedgeHandle edge) {
 	highlight(halfedgeEdge(edge));
 }

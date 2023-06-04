@@ -32,11 +32,9 @@ int main(int argc, char* argv[]) {
 	//cout << qmorph.toGmshString();
 	//qmorph.doQMorphProcess();
 	mesh.calculateCrossField();
-	mesh.highlightCrossField();
+	mesh.highlightVertexCrossField();
+	mesh.highlightSingularCrossField();
 	mesh.updateDebug();
-	for (CTMesh::FaceIter fIter(&mesh); !fIter.end(); fIter++) {
-		cout << (*fIter)->crossFieldDirection[0][0]<<"," << (*fIter)->crossFieldDirection[0][1]<<","  << (*fIter)->crossFieldDirection[0][2] << endl;
-	}
 	string newSuffix = "_qmorph.obj";
 	mesh.write_obj((name + newSuffix).c_str());
 	return 0;
