@@ -32,6 +32,8 @@ int main(int argc, char* argv[]) {
 	//cout << qmorph.toGmshString();
 	//qmorph.doQMorphProcess();
 	mesh.calculateCrossField();
+	mesh.highlightCrossField();
+	mesh.updateDebug();
 	for (CTMesh::FaceIter fIter(&mesh); !fIter.end(); fIter++) {
 		cout << (*fIter)->crossFieldDirection[0][0]<<"," << (*fIter)->crossFieldDirection[0][1]<<","  << (*fIter)->crossFieldDirection[0][2] << endl;
 	}

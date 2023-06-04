@@ -167,6 +167,8 @@ public:
 	void highlight(EdgeHandle edge);
 	void highlight(HalfedgeHandle he);
 	void highlight(VertexHandle vert);
+	void highlight(CPoint p1, CPoint p2);
+	void highlightCrossField();
 	//void highlight(initializer_list<HalfedgeHandle> heList);
 	//void highlight(initializer_list<VertexHandle> vertList);
 	void highlight(initializer_list<Component*> componentList);

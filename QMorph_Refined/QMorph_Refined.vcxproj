@@ -172,6 +172,7 @@
     <ClCompile Include="src\QMorphDeprecated.cpp" />
     <ClCompile Include="src\Smoother.cpp" />
     <ClCompile Include="src\ToolMesh.cpp" />
+    <ClCompile Include="src\ToolMeshCrossField.cpp" />
     <ClCompile Include="src\ToolMeshDebugUtil.cpp" />
     <ClCompile Include="src\ToolMeshGetterSetter.cpp" />
     <ClCompile Include="src\ToolMeshMathUtil.cpp" />

@@ -23,6 +23,35 @@ void CToolMesh::highlight(EdgeHandle edge) {
 #endif
 }
 
+void CToolMesh::highlight(CPoint p1,CPoint p2) {
+#ifdef _DEBUG
+	debug.HighlightEdge(new double[3] {p1[0], p1[1], p1[2]}, new double[3] {p2[0], p2[1], p2[2]});
+#endif
+}
+
+void CToolMesh::highlightCrossField() {
+#ifdef _DEBUG
+	for (CTMesh::FaceIter fiter(this); !fiter.end(); fiter++) {
+		CPoint center(0, 0, 0);
+		double length = 0.0;
+		int pointCount = 0;
+		for (CTMesh::FaceVertexIter fvIter(*fiter); !fvIter.end(); fvIter++) {
+			center += getPoint(*fvIter);
+			pointCount++;
+		}
+		for (CTMesh::FaceEdgeIter feIter(*fiter); !feIter.end(); feIter++) {
+			length += this->length(edgeHalfedge(*feIter,0));
+		}
+		center /= pointCount;
+		length /= pointCount*3;
+		highlight(center, (*fiter)->crossFieldDirection[0]* length + center);
+		highlight(center, (*fiter)->crossFieldDirection[1] * length + center);
+		highlight(center, (*fiter)->crossFieldDirection[2] * length + center);
+		highlight(center, (*fiter)->crossFieldDirection[3] * length + center);
+	}
+#endif
+}
+
 void CToolMesh::highlight(HalfedgeHandle edge) {
 	highlight(halfedgeEdge(edge));
 }
