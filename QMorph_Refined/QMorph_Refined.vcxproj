@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(LibraryPath);$(ProjectDir)lib;C:\Program Files (x86)\CoMISo\lib</LibraryPath>
     <IncludePath>$(ProjectDir)include\MeshLib;$(ProjectDir)include;E:\lib\Directional\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>$(ProjectDir)include\external;$(ProjectDir)components;E:\lib\vcglib-2022.02\vcglib-2022.02;C:\Program Files (x86)\Eigen3\include\eigen3;$(ProjectDir)include\external\libigl-2.4.0\include;E:\lib\getfem-5.4.2\src;C:\Program Files (x86)\CoMISo\include;C:\Program Files (x86)\CoMISo\include\CoMISo;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(ProjectDir)include\external;$(ProjectDir)components;E:\lib\vcglib-2022.02\vcglib-2022.02;C:\Program Files (x86)\Eigen3\include\eigen3;$(ProjectDir)include\external\libigl-2.4.0\include;E:\lib\libigl-main\libigl-main\include;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(ProjectDir)build\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
   </PropertyGroup>
@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/D _USE_MATH_DEFINES %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -121,6 +122,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/D _USE_MATH_DEFINES %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,6 +139,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/D _USE_MATH_DEFINES /D _CRT_SECURE_NO_WARNINGS /bigobj /D_SCL_SECURE_NO_DEPRECATE %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,6 +156,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/D _USE_MATH_DEFINES %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -163,7 +167,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\CrossField.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\QMorph.cpp" />
     <ClCompile Include="src\QMorphDeprecated.cpp" />
@@ -176,7 +179,6 @@
     <ClCompile Include="src\util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\CrossField.h" />
     <ClInclude Include="src\QMorph.h" />
     <ClInclude Include="src\Smoother.h" />
     <ClInclude Include="src\ToolMesh.h" />

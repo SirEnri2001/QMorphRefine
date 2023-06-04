@@ -219,6 +219,9 @@ public:
 		}
 		return count;
 	}
+
+	void calculateCrossField();
+
 	int frontEdgeSize(HalfedgeHandle fe);
 
 	void splitFace(VertexHandle v1, VertexHandle v2);
