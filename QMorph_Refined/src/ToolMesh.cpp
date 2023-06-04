@@ -454,3 +454,4 @@ CPoint CToolMesh::vertexCrossField(VertexHandle vertex, int id) {
 	vertexCrossFieldVec /= vertexCrossFieldVec.norm();
 	return vertexCrossFieldVec;
 }
+
