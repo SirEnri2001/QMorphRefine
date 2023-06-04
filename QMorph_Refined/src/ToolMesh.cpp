@@ -135,7 +135,6 @@ bool CToolMesh::isDisconnected(EdgeHandle edge) {
 
 int CToolMesh::deleteEdgeMergeFace(EdgeHandle tar)
 {
-
 	// <--he1-(va)<-he4---
 	//         ^|
 	//      hea||heb
@@ -219,7 +218,6 @@ int CToolMesh::deleteEdgeMergeFace(EdgeHandle tar)
 		//     |  |    |  |
 		//      \  ----  /
 		//        ------
-		std::vector<CPoint> cf = halfedgeFace(hea)->crossFieldDirection;
 		deleteFace(halfedgeFace(hea));
 		setFace(edgeHalfedge(tar, 0), NULL);
 		setFace(edgeHalfedge(tar, 1), NULL);
@@ -234,25 +232,20 @@ int CToolMesh::deleteEdgeMergeFace(EdgeHandle tar)
 		do {
 			tmp_face_vhandles.push_back(halfedgeTarget(heIter));
 		} while(heIter = halfedgeNext(heIter), heIter != he3);
-		createFace(tmp_face_vhandles)->crossFieldDirection = cf;
+		createFace(tmp_face_vhandles);
 		heIter = he1;
 		tmp_face_vhandles.clear();
 		do {
 			tmp_face_vhandles.push_back(halfedgeTarget(heIter));
 		} while (heIter = halfedgeNext(heIter), heIter != he4);
-		createFace(tmp_face_vhandles)->crossFieldDirection = cf;
+		createFace(tmp_face_vhandles);
 		return 0;
 	}
-	int cfCount = 0;
-	CPoint cf(0, 0, 0);
 	if (halfedgeFace(edgeHalfedge(tar, 0))) {
-		cf = halfedgeFace(edgeHalfedge(tar, 0))->crossFieldDirection[0];
 		deleteFace(halfedgeFace(edgeHalfedge(tar, 0)));
-		cfCount++;
 	}
 	if (halfedgeFace(edgeHalfedge(tar, 1))) {
 		deleteFace(halfedgeFace(edgeHalfedge(tar, 1)));
-		cfCount++;
 	}
 	topology_assert(!isSideEdge(edgeHalfedge(tar, 0)), { tar, edgeHalfedge(tar, 0)->feReference });
 	topology_assert(!isSideEdge(edgeHalfedge(tar, 1)), { tar, edgeHalfedge(tar, 1)->feReference });
@@ -274,9 +267,6 @@ int CToolMesh::deleteEdgeMergeFace(EdgeHandle tar)
 	} while (heIter = halfedgeNext(heIter), heIter != he4);
 	tmp_face_vhandles.push_back(va);
 	FaceHandle face = createFace(tmp_face_vhandles);
-	if (cfCount == 1) {
-		face->crossFieldDirection = 
-	}
 	return 0;
 }
 
