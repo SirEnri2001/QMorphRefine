@@ -181,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\QMorph.h" />
+    <ClInclude Include="src\QuadTree.h" />
     <ClInclude Include="src\Smoother.h" />
     <ClInclude Include="src\ToolMesh.h" />
     <ClInclude Include="src\util.h" />

@@ -106,8 +106,8 @@ SideDefineResult QMorph::verticalSideSeek(HalfedgeHandle lfe, HalfedgeHandle rfe
 	VertexHandle pivotVertex = mesh->halfedgeTarget(lfe);
 	Point pivot = mesh->getPoint(pivotVertex);
 	Point bisector = mesh->bisector(lfe, rfe);
-	int index;
-	bisector = mesh->nearestCrossField(pivotVertex, bisector, index);
+	//int index;
+	//bisector = mesh->nearestCrossField(pivotVertex, bisector, index);
 	VertexInFrontHeIterator pivotIter(mesh, pivotVertex,lfe,rfe);
 	double minAngle = 360.0;
 	bool traversed = false;

@@ -81,6 +81,28 @@ public:
 	int initFrontEdgeGroup();
 	int doSmooth(int epoch); //when debug, set easySmooth to true
 	void highlightAllSides();
+	void initQuadTree() {
+		/*Rectangle* rootRec = new Rectangle(0, 16, 0, 16);
+		QuadTree* root = new QuadTree(*rootRec);
+		root->pointList = new PointList();
+		Point rootPoint(1, 2);
+		root->pointList->point = rootPoint;
+		root->parent = NULL;
+		root->pointList->next = NULL;
+		root->pointList->Insert(Point(2, 9));
+		root->pointList->Insert(Point(2, 14));
+		root->pointList->Insert(Point(5, 9));
+		root->pointList->Insert(Point(5, 11));
+		root->pointList->Insert(Point(6, 14));
+		root->pointList->Insert(Point(7, 9));
+		root->pointList->Insert(Point(7, 11));
+		root->pointList->Insert(Point(9, 6));
+		root->pointList->Insert(Point(9, 12));
+		root->CreateChildren();
+		root->leftTopTree->CreateChildren();
+		root->leftTopTree->rightBottomTree->CreateChildren();
+		root->leftTopTree->rightTopTree->CreateChildren();*/
+	}
 private:
 	CTMesh* mesh;
 	Smoother smoother;
