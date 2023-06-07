@@ -3,7 +3,7 @@
 #include<math.h>
 #include"QMorph.h"
 #include"util.h"
-
+#include<Windows.h>
 bool debug = false;
 int globalIter = 0;
 QMorph::QMorph(CTMesh* tarMesh)
@@ -141,7 +141,7 @@ SideDefineResult QMorph::verticalSideSeek(HalfedgeHandle lfe, HalfedgeHandle rfe
 		return SideDefineResult::SideEdgeContact;
 	}
 	if (minAngle < constEpsilon) {
-		mesh->alignToCrossField(mesh->halfedgeEdge(minAngleHe), pivotVertex);
+		//mesh->alignToCrossField(mesh->halfedgeEdge(minAngleHe), pivotVertex);
 		return SideDefineResult::Succeeded;
 	}
 	else {
@@ -860,6 +860,8 @@ int QMorph::doQMorphProcess() {
 	this->initFrontEdgeGroup();
 	while (doSmooth(), globalIter++, getFrontEdgeGroup())
 	{
+		highlightAllFes();
+		Sleep(500);
 		if (frontEdgeGroupSize(getFrontEdgeGroup()) == 4) {
 			HalfedgeHandle he = getFrontEdgeGroup();
 			mesh->setSide(he, mesh->getNextFe(he), NULL);
@@ -883,9 +885,6 @@ int QMorph::doQMorphProcess() {
 		if (doCornerGenerate()) {
 			continue;
 		}
-		if (globalIter == 5) {
-			highlightAllFes();
-		}
 		if (doSideDefine() == -1) { //fail to sideDefine because frontEdges are splited
 			continue;
 		}
@@ -896,5 +895,6 @@ int QMorph::doQMorphProcess() {
 			switchFrontEdgeGroup();
 		}
 	}
+	mesh->updateDebug();
 	return 0;
 }

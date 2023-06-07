@@ -26,26 +26,29 @@ int main(int argc, char* argv[]) {
 		std::cout << "Unsupported file format" << std::endl;
 		return -1;
 	}
-	QMorph qmorph(&mesh);
-	cout << qmorph.toGmshString();
-	qmorph.doQMorphProcess();
-	int totalCount = 0;
-	int irregularCount = 0;
-	for (CTMesh::VertexIter vIter(&mesh); !vIter.end(); vIter++) {
-		if (mesh.isBoundary(*vIter)) {
-			continue;
-		}
-		int count = 0;
-		for (CTMesh::VertexEdgeIter vfIter(&mesh,*vIter); !vfIter.end(); vfIter++) {
-			count++;
-		}
-		if (count != 4) {
-			irregularCount++;
-		}
-		totalCount++;
-	}
-	string newSuffix = "_qmorph.obj";
-	mesh.write_obj((name + newSuffix).c_str());
+	mesh.calculateCrossField();
+	mesh.highlightCrossField();
+	mesh.highlightSingularCrossField();
+	mesh.updateDebug();
+	//QMorph qmorph(&mesh);
+	//qmorph.doQMorphProcess();
+	//int totalCount = 0;
+	//int irregularCount = 0;
+	//for (CTMesh::VertexIter vIter(&mesh); !vIter.end(); vIter++) {
+	//	if (mesh.isBoundary(*vIter)) {
+	//		continue;
+	//	}
+	//	int count = 0;
+	//	for (CTMesh::VertexEdgeIter vfIter(&mesh,*vIter); !vfIter.end(); vfIter++) {
+	//		count++;
+	//	}
+	//	if (count != 4) {
+	//		irregularCount++;
+	//	}
+	//	totalCount++;
+	//}
+	//string newSuffix = "_qmorph.obj";
+	//mesh.write_obj((name + newSuffix).c_str());
 	return 0;
 	
 }
