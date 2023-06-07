@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /QMorph_Refined/test/data/MFileConverter.exe
+/QMorph_Refined/build/QMorph_Refined_x64_Debug.exe
